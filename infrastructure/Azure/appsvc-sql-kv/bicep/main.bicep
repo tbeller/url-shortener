@@ -1,9 +1,11 @@
 @description('Azure Region')
 param location string = 'westus2'
 
+// App Service Name needs to be globally unique
 @description('App Service Name')
 param appServiceName string = 'url-shortener-appadfe'
 
+// SQL Server Name needs to be globally unique
 @description('SQL Server Name')
 param sqlServerName string = 'urlshortenersqlserveradfe'
 
@@ -82,6 +84,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
     enabledForDeployment: true
     enabledForTemplateDeployment: true
     enabledForDiskEncryption: true
+    enablePurgeProtection: false // Disable Purge Protection for testing purposes
   }
 }
 
