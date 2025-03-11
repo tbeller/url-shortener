@@ -28,10 +28,10 @@ var keyVaultName = '${appServiceName}-kv'
 // Build the SQL connection string using existing parameters
 var sqlConnectionString = 'Server=tcp:${sqlServerName}${environment().suffixes.sqlServerHostname},1433;Initial Catalog=${sqlDatabaseName};Persist Security Info=False;User ID=${adminUsername};Password=${adminPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
 
-/* Create Virtual Network with two subnets:
-   - sql-private-endpoint subnet: For the SQL Private Endpoint.
-   - webapp-integration subnet: For the Web App VNet Integration.
-*/
+// Create Virtual Network with two subnets:
+//   - sql-private-endpoint subnet: For the SQL Private Endpoint.
+//   - webapp-integration subnet: For the Web App VNet Integration.
+
 resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
   name: 'urlshortener-vnet'
   location: location
@@ -70,7 +70,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
 var sqlPrivateEndpointSubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', vnet.name, 'sql-private-endpoint')
 var webAppIntegrationSubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', vnet.name, 'webapp-integration')
 
-/* Create an Azure Key Vault to store secrets */
+// Create an Azure Key Vault to store secrets 
 resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
   name: keyVaultName
   location: location
@@ -87,7 +87,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
   }
 }
 
-/* Store the SQL connection string as a secret in Key Vault */
+// Store the SQL connection string as a secret in Key Vault 
 resource sqlConnectionStringSecret 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
   name: 'DB-CONNECTION-STRING'
   parent: keyVault
@@ -96,7 +96,7 @@ resource sqlConnectionStringSecret 'Microsoft.KeyVault/vaults/secrets@2021-10-01
   }
 }
 
-/* App Service Plan */
+// App Service Plan 
 resource appPlan 'Microsoft.Web/serverfarms@2021-02-01' = {
   name: '${appServiceName}-plan'
   location: location
@@ -110,7 +110,7 @@ resource appPlan 'Microsoft.Web/serverfarms@2021-02-01' = {
   }
 }
 
-/* Linux Web App with VNet Integration and Managed Identity */
+// Linux Web App with VNet Integration and Managed Identity 
 resource webApp 'Microsoft.Web/sites@2021-02-01' = {
   name: appServiceName
   location: location
@@ -143,7 +143,7 @@ resource webApp 'Microsoft.Web/sites@2021-02-01' = {
   }
 }
 
-/* Grant the Web App's managed identity access to the Key Vault secret */
+// Grant the Web App's managed identity access to the Key Vault secret 
 resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2021-10-01' = {
   name: 'add'
   parent: keyVault
@@ -162,7 +162,7 @@ resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2021-10-
   }
 }
 
-/* SQL Server */
+// SQL Server 
 resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
   name: sqlServerName
   location: location
@@ -173,7 +173,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-11-01' = {
   }
 }
 
-/* SQL Database */
+// SQL Database 
 resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01' = {
   name: sqlDatabaseName
   parent: sqlServer
@@ -184,7 +184,7 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-11-01' = {
   properties: {}
 }
 
-/* SQL Private Endpoint on the dedicated subnet */
+// SQL Private Endpoint on the dedicated subnet 
 resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2020-11-01' = {
   name: '${sqlServerName}-privateEndpoint'
   location: location
@@ -206,13 +206,13 @@ resource sqlPrivateEndpoint 'Microsoft.Network/privateEndpoints@2020-11-01' = {
   }
 }
 
-/* Private DNS Zone for SQL Private Endpoint */
+// Private DNS Zone for SQL Private Endpoint 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: 'privatelink${environment().suffixes.sqlServerHostname}'
   location: 'global'
 }
 
-/* DNS Zone Virtual Network Link */
+// DNS Zone Virtual Network Link 
 resource dnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
   name: 'link-${uniqueString(vnet.id)}'
   parent: privateDnsZone
@@ -225,7 +225,7 @@ resource dnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNet
   }
 }
 
-/* Associate the Private Endpoint with the DNS Zone by creating a DNS Zone Group */
+// Associate the Private Endpoint with the DNS Zone by creating a DNS Zone Group 
 resource sqlPrivateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2020-11-01' = {
   name: 'default'
   parent: sqlPrivateEndpoint
