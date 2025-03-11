@@ -84,7 +84,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
     enabledForDeployment: true
     enabledForTemplateDeployment: true
     enabledForDiskEncryption: true
-    enablePurgeProtection: false // Disable Purge Protection for testing purposes
   }
 }
 
@@ -123,12 +122,16 @@ resource webApp 'Microsoft.Web/sites@2021-02-01' = {
     serverFarmId: appPlan.id
     virtualNetworkSubnetId: webAppIntegrationSubnetId
     siteConfig: {
-      linuxFxVersion: 'NODE|18-lts'
+      linuxFxVersion: 'NODE|22-lts'
       // Remove the connectionStrings array and use appSettings with a Key Vault reference
       appSettings: [
         {
           name: 'BASE_URL'
           value: 'https://${appServiceName}.azurewebsites.net'
+        }
+        {
+          name: 'DB_PROVIDER'
+          value: 'sqlserver'
         }
         {
           name: 'DB_CONNECTION_STRING'

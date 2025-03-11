@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getOriginalUrl } = require("../models/Url");
+const { getOriginalUrl } = require("../models/url");
 
 router.get("/:shortCode", async (req, res) => {
     const { shortCode } = req.params;

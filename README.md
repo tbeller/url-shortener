@@ -19,10 +19,6 @@ This project comprises two main components:
     - Contains infrastructure-as-code examples to deploy the web app.
     - Organized by cloud service provider and deployment approach.
 
-## Local Setup
-
-TBD (needs a database)
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
