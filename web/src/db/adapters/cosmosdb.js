@@ -1,14 +1,27 @@
 const { CosmosClient } = require("@azure/cosmos");
 
-const endpoint = process.env.COSMOSDB_ENDPOINT;
-const key = process.env.COSMOSDB_KEY;
-const databaseId = process.env.COSMOSDB_DATABASE || "urlShortenerDB";
+const connectionString = process.env.DB_CONNECTION_STRING;
+const databaseId = process.env.COSMOSDB_DATABASE || "urlshortenerdb";
 const containerId = process.env.COSMOSDB_CONTAINER || "short_urls";
 
-if (!endpoint || !key) {
-    console.error("COSMOSDB_ENDPOINT and COSMOSDB_KEY must be provided.");
+console.log(`Connecting to Cosmos DB with connection string: ${connectionString}`);
+
+if (!connectionString) {
+    console.error("DB_CONNECTION_STRING must be provided.");
     process.exit(1);
 }
+
+// Extract endpoint and key from the connection string
+const endpointMatch = connectionString.match(/AccountEndpoint=(.*?);/);
+const keyMatch = connectionString.match(/AccountKey=(.*)/);
+
+if (!endpointMatch || !keyMatch) {
+    console.error("Invalid connection string format.");
+    process.exit(1);
+}
+
+const endpoint = endpointMatch[1];
+const key = keyMatch[1];
 
 const client = new CosmosClient({ endpoint, key });
 let container;
@@ -32,7 +45,7 @@ async function createShortUrl(shortCode, originalUrl) {
 
 async function getOriginalUrl(shortCode) {
     try {
-        const { resource } = await container.item(shortCode, shortCode).read();
+        const { resource } = await container.item(shortCode, undefined).read();
         return resource ? resource.original_url : null;
     } catch (error) {
         return null;

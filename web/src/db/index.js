@@ -1,7 +1,7 @@
 require("dotenv").config(); // Ensure environment variables are loaded early
 
 const dbType = process.env.DB_PROVIDER || "sqlserver"; // default to SQL Server
-console.log(`Using database type: ${process.env.DB_TYPE}`);
+console.log(`Using database type: ${process.env.DB_PROVIDER}`);
 
 let adapter;
 switch (dbType.toLowerCase()) {
