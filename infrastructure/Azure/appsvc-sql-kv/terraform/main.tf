@@ -64,17 +64,10 @@ resource "azurerm_key_vault" "kv" {
   }
 }
 
-# Compute the SQL connection string
-locals {
-  sql_connection_string = "Server=tcp:${var.sql_server_name}.database.windows.net,1433;Initial Catalog=${var.sql_database_name};Persist Security Info=False;User ID=${var.admin_username};Password=${var.admin_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
-  # Construct the Key Vault secret URI manually.
-  sql_secret_uri = format("%ssecrets/%s/%s", azurerm_key_vault.kv.vault_uri, azurerm_key_vault_secret.sql_connection_string.name, azurerm_key_vault_secret.sql_connection_string.version)
-}
-
 # Store the SQL connection string as a secret in Key Vault
 resource "azurerm_key_vault_secret" "sql_connection_string" {
   name         = "DB-CONNECTION-STRING"
-  value        = local.sql_connection_string
+  value        = "Server=tcp:${var.sql_server_name}.database.windows.net,1433;Initial Catalog=${var.sql_database_name};Persist Security Info=False;User ID=${var.admin_username};Password=${var.admin_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
   key_vault_id = azurerm_key_vault.kv.id
 }
 
@@ -109,11 +102,11 @@ resource "azurerm_linux_web_app" "web_app" {
   app_settings = {
     "BASE_URL"             = "https://${var.app_service_name}.azurewebsites.net"
     "DB_PROVIDER"          = "sqlserver"
-    "DB_CONNECTION_STRING" = "@Microsoft.KeyVault(SecretUri=${local.sql_secret_uri})"
+    "DB_CONNECTION_STRING" = azurerm_key_vault_secret.sql_connection_string.value
   }
 }
 
-# Grant the Web App's managed identity "get" access to the Key Vault secret
+# Grant the Web App's managed identity "Get" access to the Key Vault secret
 resource "azurerm_key_vault_access_policy" "web_app_policy" {
   key_vault_id = azurerm_key_vault.kv.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
