@@ -1,0 +1,8 @@
+location            = "westus2"
+app_service_name    = "url-shortener-app1234"
+sql_server_name     = "urlshortenersqlserver1234"
+sql_database_name   = "urlshortenerdb"
+admin_username      = "sqladmin"
+admin_password      = "P@ssword1"  // Update with a secure password
+vnet_address_space  = "10.0.0.0/16"
+resource_group_name = "url-shortener-rg"
