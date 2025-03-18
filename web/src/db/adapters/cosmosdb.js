@@ -4,8 +4,6 @@ const connectionString = process.env.DB_CONNECTION_STRING;
 const databaseId = process.env.COSMOSDB_DATABASE || "urlshortenerdb";
 const containerId = process.env.COSMOSDB_CONTAINER || "short_urls";
 
-console.log(`Connecting to Cosmos DB with connection string: ${connectionString}`);
-
 if (!connectionString) {
     console.error("DB_CONNECTION_STRING must be provided.");
     process.exit(1);
