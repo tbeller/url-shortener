@@ -1,0 +1,12 @@
+# Override for PostgreSQL development
+services:
+  urlshortener-api:
+    environment:
+      - DB_TYPE=postgresql
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=urlshortener;Username=urlshortener;Password=dev_password_123
+    depends_on:
+      postgres:
+        condition: service_started
+
+  postgres:
+    profiles: []  # Remove profile to make it active by default

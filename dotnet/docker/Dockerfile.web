@@ -1,0 +1,33 @@
+# Web Frontend Dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy project files
+COPY UrlShortener.Web/UrlShortener.Web.csproj UrlShortener.Web/
+
+# Restore dependencies
+RUN dotnet restore UrlShortener.Web/UrlShortener.Web.csproj
+
+# Copy source code
+COPY UrlShortener.Web/ UrlShortener.Web/
+
+# Build the application
+RUN dotnet build UrlShortener.Web/UrlShortener.Web.csproj -c Debug -o /app/build
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+
+# Install curl for health checks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Copy build output
+COPY --from=build /app/build .
+
+# Expose port
+EXPOSE 5000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:5000 || exit 1
+
+ENTRYPOINT ["dotnet", "UrlShortener.Web.dll"]

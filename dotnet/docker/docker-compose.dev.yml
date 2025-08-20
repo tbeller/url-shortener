@@ -1,0 +1,102 @@
+services:
+  # URL Shortener API Service
+  urlshortener-api:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.api
+    container_name: urlshortener-api-dev
+    ports:
+      - "5080:5080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5080
+      - DB_TYPE=sqlite
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/urls.db
+      - CORS_ORIGIN=http://localhost:5000
+    volumes:
+      # Mount data directory for SQLite database persistence
+      - ./data:/app/data
+      # Mount source for hot reload (optional - for development)
+      - ../UrlShortener.Api:/src/UrlShortener.Api:ro
+      - ../UrlShortener.Core:/src/UrlShortener.Core:ro
+    networks:
+      - urlshortener-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # URL Shortener Web Frontend
+  urlshortener-web:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.web
+    container_name: urlshortener-web-dev
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+      - ApiSettings__BaseUrl=http://urlshortener-api:5080
+    volumes:
+      # Mount source for hot reload (optional - for development)
+      - ../UrlShortener.Web:/src/UrlShortener.Web:ro
+    networks:
+      - urlshortener-network
+    depends_on:
+      urlshortener-api:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # PostgreSQL Database (Alternative to SQLite for development)
+  postgres:
+    image: postgres:15-alpine
+    container_name: urlshortener-postgres-dev
+    environment:
+      POSTGRES_DB: urlshortener
+      POSTGRES_USER: urlshortener
+      POSTGRES_PASSWORD: dev_password_123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    networks:
+      - urlshortener-network
+    restart: unless-stopped
+    profiles:
+      - postgres
+
+  # Redis Cache (Optional for future caching features)
+  redis:
+    image: redis:7-alpine
+    container_name: urlshortener-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - urlshortener-network
+    restart: unless-stopped
+    profiles:
+      - redis
+
+networks:
+  urlshortener-network:
+    driver: bridge
+    name: urlshortener-dev-network
+
+volumes:
+  postgres_data:
+    name: urlshortener-postgres-data
+  redis_data:
+    name: urlshortener-redis-data
