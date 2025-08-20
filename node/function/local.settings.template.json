@@ -1,0 +1,22 @@
+{
+  "_comment": "Azure Function Local Settings Template - Copy this to local.settings.json and configure for your environment",
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
+    
+    "_db_comment": "Database Configuration",
+    "DB_TYPE": "sqlite",
+    "DB_PATH": "./data/urls.db",
+    "BASE_URL": "http://localhost:7071/api",
+    
+    "_sqlserver_comment": "For SQL Server: Set DB_TYPE to 'sqlserver' and provide DB_CONNECTION_STRING",
+    "_postgresql_comment": "For PostgreSQL: Set DB_TYPE to 'postgresql' and provide DB_CONNECTION_STRING", 
+    "_cosmosdb_comment": "For Azure Cosmos DB: Set DB_TYPE to 'cosmosdb' and provide connection details",
+    "_azurestorage_comment": "For Azure Storage Tables: Set DB_TYPE to 'azurestorage' and provide storage account details"
+  },
+  "Host": {
+    "CORS": "*"
+  }
+}

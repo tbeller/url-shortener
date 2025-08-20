@@ -1,0 +1,27 @@
+{
+  "name": "url-shortener-function",
+  "version": "1.0.0",
+  "description": "URL Shortener Azure Functions with multiple database support",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "url-shortener",
+    "azure",
+    "azure-functions"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@azure/cosmos": "^4.0.0",
+    "@azure/data-tables": "^13.2.2",
+    "@azure/functions": "^4.0.0",
+    "dotenv": "^16.3.1",
+    "mssql": "^10.0.1",
+    "pg": "^8.11.3",
+    "shortid": "^2.2.16",
+    "sqlite3": "^5.1.6"
+  }
+}

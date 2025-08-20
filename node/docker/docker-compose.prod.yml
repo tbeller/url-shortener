@@ -18,6 +18,9 @@ services:
       - STATIC_PATH=./public
       # Database connection strings (set via environment or .env file)
       - DB_CONNECTION_STRING=${DB_CONNECTION_STRING:-}
+      # Terraform-based Cosmos DB configuration
+      - COSMOSDB_DATABASE=${COSMOSDB_DATABASE:-}
+      - COSMOSDB_CONTAINER=${COSMOSDB_CONTAINER:-}
       # Legacy Cosmos DB configuration (for backward compatibility)
       - COSMOS_DB_ENDPOINT=${COSMOS_DB_ENDPOINT:-}
       - COSMOS_DB_KEY=${COSMOS_DB_KEY:-}
