@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: production
+    ports:
+      - "80:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - BASE_URL=${BASE_URL:-http://localhost}
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+      - DB_TYPE=${DB_TYPE:-sqlite}
+      - DB_PATH=${DB_PATH:-/app/data/urls.db}
+      - STATIC_PATH=./public
+      # Database connection strings (set via environment or .env file)
+      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING:-}
+      # Legacy Cosmos DB configuration (for backward compatibility)
+      - COSMOS_DB_ENDPOINT=${COSMOS_DB_ENDPOINT:-}
+      - COSMOS_DB_KEY=${COSMOS_DB_KEY:-}
+      - COSMOS_DB_DATABASE=${COSMOS_DB_DATABASE:-}
+      - COSMOS_DB_CONTAINER=${COSMOS_DB_CONTAINER:-}
+      - AZURE_STORAGE_ACCOUNT_NAME=${AZURE_STORAGE_ACCOUNT_NAME:-}
+      - AZURE_STORAGE_ACCOUNT_KEY=${AZURE_STORAGE_ACCOUNT_KEY:-}
+      - AZURE_STORAGE_TABLE_NAME=${AZURE_STORAGE_TABLE_NAME:-}
+    volumes:
+      - ../data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

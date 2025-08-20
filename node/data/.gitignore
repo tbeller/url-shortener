@@ -1,0 +1,5 @@
+# This directory contains SQLite database files for development
+# Database files are ignored by git but the directory structure is preserved
+*.db
+*.sqlite
+*.sqlite3
