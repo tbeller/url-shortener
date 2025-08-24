@@ -17,11 +17,11 @@ UrlShortener.Core/          # Shared business logic and database abstractions
 ├── Factories/              # Database factory for multiple providers
 └── Database/               # Database implementations (SQLite, SQL Server, PostgreSQL, Cosmos DB, Azure Tables)
 
-UrlShortener.Api/           # API Service (Port 5080)
+UrlShortener.Api/           # API Service (example: Port 5080)
 ├── Program.cs              # Minimal API endpoints and configuration
 └── appsettings.json        # API configuration
 
-UrlShortener.Web/           # Web Frontend (Port 5000)
+UrlShortener.Web/           # Web Frontend (example: Port 5000)
 ├── Pages/                  # Razor Pages
 ├── wwwroot/                # Static assets (CSS, JS, images)
 └── appsettings.json        # Web app configuration
@@ -45,17 +45,20 @@ dotnet build
 # Terminal 1 - API Service (Port 5080)
 dotnet run --project UrlShortener.Api --urls="http://localhost:5080"
 ```
+Note: the port above is an example. The API will use the port provided via the `--urls` argument or the `PORT` environment variable at runtime. The API's own `appsettings.json` file contains a `BaseUrl` key which is informational; prefer `--urls` or environment variables to control the listening port when running.
 
 ### 3. Start the Web Frontend  
 ```bash
 # Terminal 2 - Web Frontend (Port 5000)
 dotnet run --project UrlShortener.Web --urls="http://localhost:5000"
 ```
+Note: the web frontend's `appsettings.json` contains `ApiBaseUrl` which the UI uses to call the API. Make sure the API is reachable at that address or override it (for example with `dotnet run --project UrlShortener.Web --urls="http://localhost:5000" --environment Development` and set `ApiBaseUrl` or use an environment variable).
 
 ### 4. Access the Application
-- **Web Interface**: http://localhost:5000
-- **API Documentation**: http://localhost:5080/swagger
-- **Health Check**: http://localhost:5080/health
+- **Web Interface**: http://localhost:5000 (example)
+- **API Documentation**: http://localhost:5080/swagger (example)
+- **Health Check**: http://localhost:5080/health (example)
+
 
 ## API Endpoints
 
@@ -224,15 +227,3 @@ sqlite3 ./UrlShortener.Api/urls.db "SELECT * FROM Urls;"
 - Console output in development
 - Configure file logging for production
 - Database operations logged at Information level
-
-## Next Steps
-
-1. **Azure Deployment**: Both services ready for Azure App Service deployment
-2. **Container Deployment**: Add Dockerfiles for container orchestration
-3. **CI/CD Pipeline**: GitHub Actions workflow for automated deployment
-4. **Monitoring**: Application Insights integration
-5. **Authentication**: Add user authentication and authorization
-
----
-
-*This implementation provides a production-ready, scalable URL shortener with clean separation of concerns and independent deployment capability.*

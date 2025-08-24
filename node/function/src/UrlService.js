@@ -51,7 +51,7 @@ class UrlService {
         success: true,
         shortCode: result.shortCode,
         originalUrl: result.originalUrl,
-        shortUrl: `${process.env.BASE_URL || 'http://localhost:7071/api'}/${result.shortCode}`
+        id: result.id
       };
     } catch (error) {
       throw new Error(`Failed to create short URL: ${error.message}`);
@@ -85,12 +85,13 @@ class UrlService {
   async getAllUrls() {
     try {
       const urls = await this.database.getAllUrls();
+      // Do not include an absolute shortUrl here; return the shortCode and
+      // let the frontend compute the final URL using its current origin.
       return {
         success: true,
         urls: urls.map(url => ({
           shortCode: url.shortCode,
           originalUrl: url.originalUrl,
-          shortUrl: `${process.env.BASE_URL || 'http://localhost:7071/api'}/${url.shortCode}`,
           createdAt: url.createdAt
         }))
       };

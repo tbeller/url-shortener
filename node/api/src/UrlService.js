@@ -47,11 +47,14 @@ class UrlService {
 
     try {
       const result = await this.database.createUrl(shortCode, originalUrl);
+      // Return only the shortCode and originalUrl. The frontend will construct
+      // the full short URL from the client's origin so it matches how users
+      // access the site (local dev, staging, production).
       return {
         success: true,
         shortCode: result.shortCode,
         originalUrl: result.originalUrl,
-        shortUrl: `${process.env.BASE_URL || 'http://localhost:3000'}/api/${result.shortCode}`
+        id: result.id
       };
     } catch (error) {
       throw new Error(`Failed to create short URL: ${error.message}`);
@@ -85,12 +88,13 @@ class UrlService {
   async getAllUrls() {
     try {
       const urls = await this.database.getAllUrls();
+      // Do not include absolute shortUrl values here; return the shortCode and
+      // let the frontend compute the final URL using window.location.origin.
       return {
         success: true,
         urls: urls.map(url => ({
           shortCode: url.shortCode,
           originalUrl: url.originalUrl,
-          shortUrl: `${process.env.BASE_URL || 'http://localhost:3000'}/api/${url.shortCode}`,
           createdAt: url.createdAt
         }))
       };

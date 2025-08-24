@@ -205,12 +205,3 @@ docker compose -f docker-compose.dev.yml build --no-cache
 # Remove all containers and images
 docker system prune -a
 ```
-
-### Performance
-- Services start with health check dependencies
-- PostgreSQL includes sample data for immediate testing
-- Redis available for caching (future feature)
-
----
-
-This Docker setup provides a complete development environment with service separation, database options, and production-like networking.

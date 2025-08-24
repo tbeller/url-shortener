@@ -159,7 +159,8 @@ class URLShortener {
 
     // Display shorten result
     displayShortenResult(result) {
-        this.shortUrlDisplay.value = result.shortUrl;
+    const fullShortUrl = `${this.baseURL}/api/${result.shortCode}`;
+    this.shortUrlDisplay.value = fullShortUrl;
         this.originalUrlDisplay.textContent = result.originalUrl;
         this.shortenResult.classList.remove('hidden');
     }
@@ -218,17 +219,20 @@ class URLShortener {
             return;
         }
 
-        this.urlsList.innerHTML = urls.map(url => `
+        this.urlsList.innerHTML = urls.map(url => {
+            const shortUrl = `${this.baseURL}/api/${url.shortCode}`;
+            return `
             <a href="${url.originalUrl}" target="_blank" rel="noopener noreferrer" class="url-item">
                 <div class="url-details">
                     <div class="url-row">
-                        <div class="short-url">${url.shortUrl}</div>
+                        <div class="short-url">${shortUrl}</div>
                         <div class="created">${this.formatDate(url.createdAt)}</div>
                     </div>
                     <div class="original">${this.truncateUrl(url.originalUrl, 80)}</div>
                 </div>
             </a>
-        `).join('');
+            `;
+        }).join('');
     }
 
     // Utility functions
